@@ -28,6 +28,9 @@ import java.util.Set;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.Iterables;
 
 import com.linecorp.armeria.client.ClientBuilder;
@@ -50,6 +53,8 @@ import com.linecorp.centraldogma.internal.api.v1.HttpApiV1Constants;
  */
 public class AbstractArmeriaCentralDogmaBuilder<B extends AbstractArmeriaCentralDogmaBuilder<B>>
         extends AbstractCentralDogmaBuilder<B> {
+
+    private static final Logger logger = LoggerFactory.getLogger(AbstractArmeriaCentralDogmaBuilder.class);
 
     private static final int DEFAULT_HEALTH_CHECK_INTERVAL_MILLIS = 15000;
 
@@ -147,7 +152,11 @@ public class AbstractArmeriaCentralDogmaBuilder<B extends AbstractArmeriaCentral
                         .builder(addr.getHostString())
                         .eventLoop(clientFactory.eventLoopGroup().next());
                 dnsAddressEndpointGroupConfigurator.configure(dnsAddressEndpointGroup);
-                groups.add(dnsAddressEndpointGroup.port(addr.getPort()).build());
+                final DnsAddressEndpointGroup endpointGroup =
+                        dnsAddressEndpointGroup.port(addr.getPort()).build();
+                endpointGroup.addListener(endpoints -> logger.info(
+                        "Updated DnsAddressEndpointGroup: {}", endpoints));
+                groups.add(endpointGroup);
             } else {
                 staticEndpoints.add(toResolvedHostEndpoint(addr));
             }
@@ -165,12 +174,16 @@ public class AbstractArmeriaCentralDogmaBuilder<B extends AbstractArmeriaCentral
         }
 
         if (!healthCheckInterval.isZero()) {
-            return HealthCheckedEndpointGroup.builder(group, HttpApiV1Constants.HEALTH_CHECK_PATH)
-                                             .clientFactory(clientFactory)
-                                             .protocol(isUseTls() ? SessionProtocol.HTTPS
-                                                                  : SessionProtocol.HTTP)
-                                             .retryInterval(healthCheckInterval)
-                                             .build();
+            final HealthCheckedEndpointGroup healthCheckedEndpointGroup =
+                    HealthCheckedEndpointGroup.builder(group, HttpApiV1Constants.HEALTH_CHECK_PATH)
+                                              .clientFactory(clientFactory)
+                                              .protocol(isUseTls() ? SessionProtocol.HTTPS
+                                                                   : SessionProtocol.HTTP)
+                                              .retryInterval(healthCheckInterval)
+                                              .build();
+            healthCheckedEndpointGroup.addListener(endpoints -> logger.info(
+                    "Updated HealthCheckedEndpointGroup: {}", endpoints));
+            return healthCheckedEndpointGroup;
         } else {
             return group;
         }

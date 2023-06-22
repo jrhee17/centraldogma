@@ -40,7 +40,7 @@
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>          <strong class="jxr_keyword">final</strong> StringBuilder sb = <strong class="jxr_keyword">new</strong> StringBuilder(segment.length() + 1);
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>          sb.append('/');
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          <strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0, end = segment.length(); i &lt; end; ++i) {
-<a class="jxr_linenumber" name="L35" href="#L35">35</a>              <strong class="jxr_keyword">char</strong> c = segment.charAt(i);
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>              <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">char</strong> c = segment.charAt(i);
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>              <strong class="jxr_keyword">if</strong> (c == '/') {
 <a class="jxr_linenumber" name="L37" href="#L37">37</a>                  sb.append(<span class="jxr_string">"~1"</span>);
 <a class="jxr_linenumber" name="L38" href="#L38">38</a>                  <strong class="jxr_keyword">continue</strong>;
@@ -58,6 +58,6 @@
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  }
 </pre>
 <hr/>
-<div id="footer">&copy; Copyright 2017&ndash;2019 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
+<div id="footer">&copy; Copyright 2017&ndash;2023 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
 </body>
 </html>

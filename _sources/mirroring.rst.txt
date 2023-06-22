@@ -50,7 +50,11 @@ You need to put two files into the ``meta`` repository of your Central Dogma pro
         "localRepo": "foo",
         "localPath": "/",
         "remoteUri": "git+ssh://git.example.com/foo.git/settings#release",
-        "credentialId": "my_private_key"
+        "credentialId": "my_private_key",
+        "gitignore": [
+            "/credential.txt",
+            "private_dir"
+        ]
       }
     ]
 
@@ -64,7 +68,7 @@ You need to put two files into the ``meta`` repository of your Central Dogma pro
 
 - ``schedule`` (string, optional)
 
-  - a `Quartz cron expression <https://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/crontrigger.html>`_
+  - a `Quartz cron expression <https://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html>`_
     that describes when the mirroring task is supposed to be triggered. If unspecified, ``0 * * * * ?``
     (every minute) is used.
 
@@ -96,13 +100,20 @@ You need to put two files into the ``meta`` repository of your Central Dogma pro
     the Git repository ``/foo.git`` If you want to mirror the whole content of the repository, you can simply
     end the URI with ``.git``. e.g. ``git+ssh://git.example.com/foo.git``
   - Fragment represents a branch name. e.g. ``#release`` will mirror the branch ``release``. If unspecified,
-    the branch ``master`` is mirrored.
+    the repository's default branch is mirrored.
 
 - ``credentialId`` (string, optional)
 
   - the ID of the credential to use for authentication, as defined in ``/credentials.json``. If unspecified,
     the credential whose ``hostnamePattern`` is matched by the host name part of the ``remoteUri`` value will
     be selected automatically.
+
+- ``gitignore`` (string or array of strings, optional)
+
+  - a `gitignore <https://git-scm.com/docs/gitignore>` specifies files that should be excluded from mirroring.
+    The type of gitignore can either be a string containing the entire file (e.g. ``/filename.txt\ndirectory``) or an array 
+    of strings where each line represents a single pattern. The file pattern expressed in gitignore is relative to the
+    path of ``remoteUri``.
 
 ``/credentials.json`` contains the authentication credentials which are required when accessing the Git
 repositories defined in ``/mirrors.json``:
@@ -134,6 +145,11 @@ repositories defined in ``/mirrors.json``:
         "publicKey": "ssh-rsa ... user@host",
         "privateKey": "-----BEGIN RSA PRIVATE KEY-----\n...\n-----END RSA PRIVATE KEY-----\n",
         "passphrase": null
+      },
+      {
+        "id": "my_access_token",
+        "type": "access_token",
+        "accessToken": "github_pat_..."
       }
     ]
 
@@ -144,7 +160,7 @@ repositories defined in ``/mirrors.json``:
 
 - ``type`` (string)
 
-  - the type of authentication mechanism: ``none``, ``password`` or ``public_key``.
+  - the type of authentication mechanism: ``none``, ``password``, ``public_key`` or ``access_token``.
 
 - ``hostnamePatterns`` (array of strings, optional)
 
@@ -154,7 +170,8 @@ repositories defined in ``/mirrors.json``:
 
 - ``username`` (string)
 
-  - the user name
+  - the user name. You must specify this field if you use a credential whose type is ``password`` or
+    ``public_key``.
 
 - ``password`` (string)
 
@@ -162,24 +179,45 @@ repositories defined in ``/mirrors.json``:
 
 - ``publicKey`` (string)
 
-  - the OpenSSH public key which is used for SSH public key authentication.
+  - the OpenSSH RSA public key which is used for SSH public key authentication.
 
 - ``privateKey`` (string)
 
-  - the OpenSSH private key which is used for SSH public key authentication.
+  - the OpenSSH RSA private key in PEM format which is used for SSH public key authentication.
+
+    .. note::
+
+        Note that the private key must be an RSA key formatted in PEM format, which starts with
+        ``-----BEGIN RSA PRIVATE KEY-----``. If your private key starts with
+        ``-----BEGIN OPENSSH PRIVATE KEY-----``, you must convert it into PEM format first:
+
+        .. code-block:: shell
+
+            $ ssh-keygen -p -m PEM -f ~/.ssh/id_rsa
+
+        Alternatively, you can regenerate the key pair with the ``-m PEM`` option:
+
+        .. code-block:: shell
+
+            $ ssh-keygen -m PEM -t rsa -b 4096 -C "your_email@example.com"
+
+    .. tip::
+
+        You can convert your private key into a JSON string using a ``perl`` command:
+
+        .. code-block:: shell
+
+            $ cat ~/.ssh/id_rsa | perl -p -0 -e 's/\r?\n/\\n/g'
 
 - ``passphrase`` (string)
 
   - the passphrase of ``privateKey`` if the private key is encrypted.
     If unspecified or ``null``, the private key should not be encrypted.
 
-.. note::
+- ``accessToken`` (string)
 
-    You may want to convert your private key into a JSON string using a ``perl`` command:
-
-    .. code-block:: shell
-
-        $ cat ~/.ssh/id_rsa | perl -p -0 -e 's/\r?\n/\\n/g'
+  - the access token which is used for access token-based authentication such as
+    `GitHub Personal Access Token <https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token>`_.
 
 If everything was configured correctly, the repository you specified in ``localRepo`` will have a file named
 ``mirror_state.json`` on a successful run, which contains the commit ID of the Git repository:
@@ -189,6 +227,11 @@ If everything was configured correctly, the repository you specified in ``localR
     {
       "sourceRevision": "22fb176e4d8096d709d34ffe985c5f3acea83ef2"
     }
+
+Setting up a CD-to-Git mirror
+-----------------------------
+It's exactly the same as setting up a Git-to-CD mirror which is described above, except you need to specify
+``direction`` with ``LOCAL_TO_REMOTE``.
 
 Mirror limit settings
 ---------------------

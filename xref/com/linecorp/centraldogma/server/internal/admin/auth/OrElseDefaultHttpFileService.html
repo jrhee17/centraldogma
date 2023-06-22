@@ -30,13 +30,13 @@
 <a class="jxr_linenumber" name="L22" href="#L22">22</a>  <strong class="jxr_keyword">import</strong> com.linecorp.armeria.server.HttpService;
 <a class="jxr_linenumber" name="L23" href="#L23">23</a>  <strong class="jxr_keyword">import</strong> com.linecorp.armeria.server.ServiceRequestContext;
 <a class="jxr_linenumber" name="L24" href="#L24">24</a>  <strong class="jxr_keyword">import</strong> com.linecorp.armeria.server.ServiceRequestContextWrapper;
-<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> com.linecorp.armeria.server.file.HttpFileService;
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  <strong class="jxr_keyword">import</strong> com.linecorp.armeria.server.file.FileService;
 <a class="jxr_linenumber" name="L26" href="#L26">26</a>  
 <a class="jxr_linenumber" name="L27" href="#L27">27</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/admin/auth/OrElseDefaultHttpFileService.html">OrElseDefaultHttpFileService</a> <strong class="jxr_keyword">implements</strong> HttpService {
 <a class="jxr_linenumber" name="L28" href="#L28">28</a>  
 <a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> HttpService delegate;
 <a class="jxr_linenumber" name="L30" href="#L30">30</a>  
-<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/admin/auth/OrElseDefaultHttpFileService.html">OrElseDefaultHttpFileService</a>(HttpFileService fileService, String defaultPath) {
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">public</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/admin/auth/OrElseDefaultHttpFileService.html">OrElseDefaultHttpFileService</a>(FileService fileService, String defaultPath) {
 <a class="jxr_linenumber" name="L32" href="#L32">32</a>          requireNonNull(fileService, <span class="jxr_string">"fileService"</span>);
 <a class="jxr_linenumber" name="L33" href="#L33">33</a>          requireNonNull(defaultPath, <span class="jxr_string">"defaultPath"</span>);
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>          <em class="jxr_comment">// Always return '/index.html' if there is no entry on the requested path, in order to route</em>
@@ -68,6 +68,6 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  }
 </pre>
 <hr/>
-<div id="footer">&copy; Copyright 2017&ndash;2019 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
+<div id="footer">&copy; Copyright 2017&ndash;2023 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
 </body>
 </html>

@@ -74,7 +74,7 @@
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>                  resHeaders = headers;
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>              }
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  
-<a class="jxr_linenumber" name="L69" href="#L69">69</a>              <strong class="jxr_keyword">final</strong> HttpData httpData = HttpData.of(Jackson.writeValueAsBytes(resObj));
+<a class="jxr_linenumber" name="L69" href="#L69">69</a>              <strong class="jxr_keyword">final</strong> HttpData httpData = HttpData.wrap(Jackson.writeValueAsBytes(resObj));
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>              <strong class="jxr_keyword">return</strong> HttpResponse.of(resHeaders, httpData, trailingHeaders);
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>          } <strong class="jxr_keyword">catch</strong> (JsonProcessingException e) {
 <a class="jxr_linenumber" name="L72" href="#L72">72</a>              logger.debug(<span class="jxr_string">"Failed to convert a response:"</span>, e);
@@ -84,6 +84,6 @@
 <a class="jxr_linenumber" name="L76" href="#L76">76</a>  }
 </pre>
 <hr/>
-<div id="footer">&copy; Copyright 2017&ndash;2019 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
+<div id="footer">&copy; Copyright 2017&ndash;2023 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
 </body>
 </html>

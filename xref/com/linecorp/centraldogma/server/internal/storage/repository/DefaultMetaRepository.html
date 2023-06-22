@@ -52,9 +52,9 @@
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.annotation.JsonTypeInfo;
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.JsonNode;
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>  <strong class="jxr_keyword">import</strong> com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> com.google.common.annotations.VisibleForTesting;
-<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> com.google.common.collect.ImmutableList;
-<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> com.google.common.collect.ImmutableSet;
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>  <strong class="jxr_keyword">import</strong> com.google.common.collect.ImmutableList;
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  <strong class="jxr_keyword">import</strong> com.google.common.collect.ImmutableSet;
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>  <strong class="jxr_keyword">import</strong> com.google.common.collect.Streams;
 <a class="jxr_linenumber" name="L50" href="#L50">50</a>  
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>  <strong class="jxr_keyword">import</strong> com.linecorp.centraldogma.common.Entry;
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  <strong class="jxr_keyword">import</strong> com.linecorp.centraldogma.common.Revision;
@@ -68,11 +68,11 @@
 <a class="jxr_linenumber" name="L60" href="#L60">60</a>  
 <a class="jxr_linenumber" name="L61" href="#L61">61</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">DefaultMetaRepository</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/RepositoryWrapper.html">RepositoryWrapper</a> <strong class="jxr_keyword">implements</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/storage/repository/MetaRepository.html">MetaRepository</a> {
 <a class="jxr_linenumber" name="L62" href="#L62">62</a>  
-<a class="jxr_linenumber" name="L63" href="#L63">63</a>      @VisibleForTesting
-<a class="jxr_linenumber" name="L64" href="#L64">64</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PATH_CREDENTIALS = <span class="jxr_string">"/credentials.json"</span>;
-<a class="jxr_linenumber" name="L65" href="#L65">65</a>  
-<a class="jxr_linenumber" name="L66" href="#L66">66</a>      @VisibleForTesting
-<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PATH_MIRRORS = <span class="jxr_string">"/mirrors.json"</span>;
+<a class="jxr_linenumber" name="L63" href="#L63">63</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PATH_CREDENTIALS = <span class="jxr_string">"/credentials.json"</span>;
+<a class="jxr_linenumber" name="L64" href="#L64">64</a>  
+<a class="jxr_linenumber" name="L65" href="#L65">65</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PATH_MIRRORS = <span class="jxr_string">"/mirrors.json"</span>;
+<a class="jxr_linenumber" name="L66" href="#L66">66</a>  
+<a class="jxr_linenumber" name="L67" href="#L67">67</a>      <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Set&lt;String&gt; metaRepoFiles = ImmutableSet.of(PATH_CREDENTIALS, PATH_MIRRORS);
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> String PATH_CREDENTIALS_AND_MIRRORS = PATH_CREDENTIALS + ',' + PATH_MIRRORS;
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  
@@ -229,142 +229,159 @@
 <a class="jxr_linenumber" name="L221" href="#L221">221</a>         <strong class="jxr_keyword">final</strong> String localPath;
 <a class="jxr_linenumber" name="L222" href="#L222">222</a>         <strong class="jxr_keyword">final</strong> URI remoteUri;
 <a class="jxr_linenumber" name="L223" href="#L223">223</a>         @Nullable
-<a class="jxr_linenumber" name="L224" href="#L224">224</a>         <strong class="jxr_keyword">final</strong> String credentialId;
-<a class="jxr_linenumber" name="L225" href="#L225">225</a>         <strong class="jxr_keyword">final</strong> Cron schedule;
-<a class="jxr_linenumber" name="L226" href="#L226">226</a> 
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         @JsonCreator
-<a class="jxr_linenumber" name="L228" href="#L228">228</a>         <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">SingleMirrorConfig</a>(@JsonProperty(<span class="jxr_string">"enabled"</span>) @Nullable Boolean enabled,
-<a class="jxr_linenumber" name="L229" href="#L229">229</a>                            @JsonProperty(<span class="jxr_string">"schedule"</span>) @Nullable String schedule,
-<a class="jxr_linenumber" name="L230" href="#L230">230</a>                            @JsonProperty(value = <span class="jxr_string">"direction"</span>, required = <strong class="jxr_keyword">true</strong>) MirrorDirection direction,
-<a class="jxr_linenumber" name="L231" href="#L231">231</a>                            @JsonProperty(value = <span class="jxr_string">"localRepo"</span>, required = <strong class="jxr_keyword">true</strong>) String localRepo,
-<a class="jxr_linenumber" name="L232" href="#L232">232</a>                            @JsonProperty(<span class="jxr_string">"localPath"</span>) @Nullable String localPath,
-<a class="jxr_linenumber" name="L233" href="#L233">233</a>                            @JsonProperty(value = <span class="jxr_string">"remoteUri"</span>, required = <strong class="jxr_keyword">true</strong>) URI remoteUri,
-<a class="jxr_linenumber" name="L234" href="#L234">234</a>                            @JsonProperty(<span class="jxr_string">"credentialId"</span>) @Nullable String credentialId) {
-<a class="jxr_linenumber" name="L235" href="#L235">235</a> 
-<a class="jxr_linenumber" name="L236" href="#L236">236</a>             <strong class="jxr_keyword">super</strong>(firstNonNull(enabled, <strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L237" href="#L237">237</a>             <strong class="jxr_keyword">this</strong>.schedule = cronParser.parse(firstNonNull(schedule, DEFAULT_SCHEDULE));
-<a class="jxr_linenumber" name="L238" href="#L238">238</a>             <strong class="jxr_keyword">this</strong>.direction = requireNonNull(direction, <span class="jxr_string">"direction"</span>);
-<a class="jxr_linenumber" name="L239" href="#L239">239</a>             <strong class="jxr_keyword">this</strong>.localRepo = requireNonNull(localRepo, <span class="jxr_string">"localRepo"</span>);
-<a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">this</strong>.localPath = firstNonNull(localPath, <span class="jxr_string">"/"</span>);
-<a class="jxr_linenumber" name="L241" href="#L241">241</a>             <strong class="jxr_keyword">this</strong>.remoteUri = requireNonNull(remoteUri, <span class="jxr_string">"remoteUri"</span>);
-<a class="jxr_linenumber" name="L242" href="#L242">242</a>             <strong class="jxr_keyword">this</strong>.credentialId = credentialId;
-<a class="jxr_linenumber" name="L243" href="#L243">243</a>         }
-<a class="jxr_linenumber" name="L244" href="#L244">244</a> 
-<a class="jxr_linenumber" name="L245" href="#L245">245</a>         @Override
-<a class="jxr_linenumber" name="L246" href="#L246">246</a>         List&lt;Mirror&gt; toMirrors(<a href="../../../../../../../com/linecorp/centraldogma/server/storage/project/Project.html">Project</a> parent, Iterable&lt;MirrorCredential&gt; credentials) {
-<a class="jxr_linenumber" name="L247" href="#L247">247</a>             <strong class="jxr_keyword">if</strong> (!enabled || localRepo == <strong class="jxr_keyword">null</strong> || !parent.repos().exists(localRepo)) {
-<a class="jxr_linenumber" name="L248" href="#L248">248</a>                 <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L249" href="#L249">249</a>             }
-<a class="jxr_linenumber" name="L250" href="#L250">250</a> 
-<a class="jxr_linenumber" name="L251" href="#L251">251</a>             <strong class="jxr_keyword">return</strong> Collections.singletonList(Mirror.of(
-<a class="jxr_linenumber" name="L252" href="#L252">252</a>                     schedule, direction, findCredential(credentials, remoteUri, credentialId),
-<a class="jxr_linenumber" name="L253" href="#L253">253</a>                     parent.repos().get(localRepo), localPath, remoteUri));
-<a class="jxr_linenumber" name="L254" href="#L254">254</a>         }
-<a class="jxr_linenumber" name="L255" href="#L255">255</a>     }
-<a class="jxr_linenumber" name="L256" href="#L256">256</a> 
-<a class="jxr_linenumber" name="L257" href="#L257">257</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MultipleMirrorConfig</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MirrorConfig</a> {
-<a class="jxr_linenumber" name="L258" href="#L258">258</a> 
-<a class="jxr_linenumber" name="L259" href="#L259">259</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/mirror/MirrorDirection.html">MirrorDirection</a> defaultDirection;
-<a class="jxr_linenumber" name="L260" href="#L260">260</a>         <strong class="jxr_keyword">final</strong> String defaultLocalPath;
-<a class="jxr_linenumber" name="L261" href="#L261">261</a>         <strong class="jxr_keyword">final</strong> Cron defaultSchedule;
-<a class="jxr_linenumber" name="L262" href="#L262">262</a>         @Nullable
-<a class="jxr_linenumber" name="L263" href="#L263">263</a>         <strong class="jxr_keyword">final</strong> String defaultCredentialId;
-<a class="jxr_linenumber" name="L264" href="#L264">264</a>         <strong class="jxr_keyword">final</strong> List&lt;MirrorInclude&gt; includes;
-<a class="jxr_linenumber" name="L265" href="#L265">265</a>         <strong class="jxr_keyword">final</strong> List&lt;Pattern&gt; excludes;
+<a class="jxr_linenumber" name="L224" href="#L224">224</a>         <strong class="jxr_keyword">final</strong> String gitignore;
+<a class="jxr_linenumber" name="L225" href="#L225">225</a>         @Nullable
+<a class="jxr_linenumber" name="L226" href="#L226">226</a>         <strong class="jxr_keyword">final</strong> String credentialId;
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">final</strong> Cron schedule;
+<a class="jxr_linenumber" name="L228" href="#L228">228</a> 
+<a class="jxr_linenumber" name="L229" href="#L229">229</a>         @JsonCreator
+<a class="jxr_linenumber" name="L230" href="#L230">230</a>         <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">SingleMirrorConfig</a>(@JsonProperty(<span class="jxr_string">"enabled"</span>) @Nullable Boolean enabled,
+<a class="jxr_linenumber" name="L231" href="#L231">231</a>                            @JsonProperty(<span class="jxr_string">"schedule"</span>) @Nullable String schedule,
+<a class="jxr_linenumber" name="L232" href="#L232">232</a>                            @JsonProperty(value = <span class="jxr_string">"direction"</span>, required = <strong class="jxr_keyword">true</strong>) MirrorDirection direction,
+<a class="jxr_linenumber" name="L233" href="#L233">233</a>                            @JsonProperty(value = <span class="jxr_string">"localRepo"</span>, required = <strong class="jxr_keyword">true</strong>) String localRepo,
+<a class="jxr_linenumber" name="L234" href="#L234">234</a>                            @JsonProperty(<span class="jxr_string">"localPath"</span>) @Nullable String localPath,
+<a class="jxr_linenumber" name="L235" href="#L235">235</a>                            @JsonProperty(value = <span class="jxr_string">"remoteUri"</span>, required = <strong class="jxr_keyword">true</strong>) URI remoteUri,
+<a class="jxr_linenumber" name="L236" href="#L236">236</a>                            @JsonProperty(<span class="jxr_string">"gitignore"</span>) @Nullable Object gitignore,
+<a class="jxr_linenumber" name="L237" href="#L237">237</a>                            @JsonProperty(<span class="jxr_string">"credentialId"</span>) @Nullable String credentialId) {
+<a class="jxr_linenumber" name="L238" href="#L238">238</a> 
+<a class="jxr_linenumber" name="L239" href="#L239">239</a>             <strong class="jxr_keyword">super</strong>(firstNonNull(enabled, <strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L240" href="#L240">240</a>             <strong class="jxr_keyword">this</strong>.schedule = cronParser.parse(firstNonNull(schedule, DEFAULT_SCHEDULE));
+<a class="jxr_linenumber" name="L241" href="#L241">241</a>             <strong class="jxr_keyword">this</strong>.direction = requireNonNull(direction, <span class="jxr_string">"direction"</span>);
+<a class="jxr_linenumber" name="L242" href="#L242">242</a>             <strong class="jxr_keyword">this</strong>.localRepo = requireNonNull(localRepo, <span class="jxr_string">"localRepo"</span>);
+<a class="jxr_linenumber" name="L243" href="#L243">243</a>             <strong class="jxr_keyword">this</strong>.localPath = firstNonNull(localPath, <span class="jxr_string">"/"</span>);
+<a class="jxr_linenumber" name="L244" href="#L244">244</a>             <strong class="jxr_keyword">this</strong>.remoteUri = requireNonNull(remoteUri, <span class="jxr_string">"remoteUri"</span>);
+<a class="jxr_linenumber" name="L245" href="#L245">245</a>             <strong class="jxr_keyword">if</strong> (gitignore != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L246" href="#L246">246</a>                 <strong class="jxr_keyword">if</strong> (gitignore instanceof Iterable &amp;&amp;
+<a class="jxr_linenumber" name="L247" href="#L247">247</a>                     Streams.stream((Iterable&lt;?&gt;) gitignore).allMatch(String.<strong class="jxr_keyword">class</strong>::isInstance)) {
+<a class="jxr_linenumber" name="L248" href="#L248">248</a>                     <strong class="jxr_keyword">this</strong>.gitignore = String.join(<span class="jxr_string">"\n"</span>, (Iterable&lt;String&gt;) gitignore);
+<a class="jxr_linenumber" name="L249" href="#L249">249</a>                 } <strong class="jxr_keyword">else</strong> <strong class="jxr_keyword">if</strong> (gitignore instanceof String) {
+<a class="jxr_linenumber" name="L250" href="#L250">250</a>                     <strong class="jxr_keyword">this</strong>.gitignore = (String) gitignore;
+<a class="jxr_linenumber" name="L251" href="#L251">251</a>                 } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L252" href="#L252">252</a>                     <strong class="jxr_keyword">throw</strong> <strong class="jxr_keyword">new</strong> IllegalArgumentException(
+<a class="jxr_linenumber" name="L253" href="#L253">253</a>                             <span class="jxr_string">"gitignore: "</span> + gitignore + <span class="jxr_string">" (expected: either a string or an array of strings)"</span>);
+<a class="jxr_linenumber" name="L254" href="#L254">254</a>                 }
+<a class="jxr_linenumber" name="L255" href="#L255">255</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L256" href="#L256">256</a>                 <strong class="jxr_keyword">this</strong>.gitignore = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L257" href="#L257">257</a>             }
+<a class="jxr_linenumber" name="L258" href="#L258">258</a>             <strong class="jxr_keyword">this</strong>.credentialId = credentialId;
+<a class="jxr_linenumber" name="L259" href="#L259">259</a>         }
+<a class="jxr_linenumber" name="L260" href="#L260">260</a> 
+<a class="jxr_linenumber" name="L261" href="#L261">261</a>         @Override
+<a class="jxr_linenumber" name="L262" href="#L262">262</a>         List&lt;Mirror&gt; toMirrors(<a href="../../../../../../../com/linecorp/centraldogma/server/storage/project/Project.html">Project</a> parent, Iterable&lt;MirrorCredential&gt; credentials) {
+<a class="jxr_linenumber" name="L263" href="#L263">263</a>             <strong class="jxr_keyword">if</strong> (!enabled || localRepo == <strong class="jxr_keyword">null</strong> || !parent.repos().exists(localRepo)) {
+<a class="jxr_linenumber" name="L264" href="#L264">264</a>                 <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L265" href="#L265">265</a>             }
 <a class="jxr_linenumber" name="L266" href="#L266">266</a> 
-<a class="jxr_linenumber" name="L267" href="#L267">267</a>         @JsonCreator
-<a class="jxr_linenumber" name="L268" href="#L268">268</a>         <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MultipleMirrorConfig</a>(
-<a class="jxr_linenumber" name="L269" href="#L269">269</a>                 @JsonProperty(<span class="jxr_string">"enabled"</span>) @Nullable Boolean enabled,
-<a class="jxr_linenumber" name="L270" href="#L270">270</a>                 @JsonProperty(<span class="jxr_string">"defaultSchedule"</span>) @Nullable String defaultSchedule,
-<a class="jxr_linenumber" name="L271" href="#L271">271</a>                 @JsonProperty(value = <span class="jxr_string">"defaultDirection"</span>, required = <strong class="jxr_keyword">true</strong>) MirrorDirection defaultDirection,
-<a class="jxr_linenumber" name="L272" href="#L272">272</a>                 @JsonProperty(<span class="jxr_string">"defaultLocalPath"</span>) @Nullable String defaultLocalPath,
-<a class="jxr_linenumber" name="L273" href="#L273">273</a>                 @JsonProperty(<span class="jxr_string">"defaultCredentialId"</span>) @Nullable String defaultCredentialId,
-<a class="jxr_linenumber" name="L274" href="#L274">274</a>                 @JsonProperty(value = <span class="jxr_string">"includes"</span>, required = <strong class="jxr_keyword">true</strong>)
-<a class="jxr_linenumber" name="L275" href="#L275">275</a>                 @JsonDeserialize(contentAs = MirrorInclude.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L276" href="#L276">276</a>                         Iterable&lt;MirrorInclude&gt; includes,
-<a class="jxr_linenumber" name="L277" href="#L277">277</a>                 @JsonProperty(<span class="jxr_string">"excludes"</span>) @Nullable
-<a class="jxr_linenumber" name="L278" href="#L278">278</a>                 @JsonDeserialize(contentAs = Pattern.<strong class="jxr_keyword">class</strong>)
-<a class="jxr_linenumber" name="L279" href="#L279">279</a>                         Iterable&lt;Pattern&gt; excludes) {
-<a class="jxr_linenumber" name="L280" href="#L280">280</a> 
-<a class="jxr_linenumber" name="L281" href="#L281">281</a>             <strong class="jxr_keyword">super</strong>(firstNonNull(enabled, <strong class="jxr_keyword">true</strong>));
-<a class="jxr_linenumber" name="L282" href="#L282">282</a>             <strong class="jxr_keyword">this</strong>.defaultSchedule = cronParser.parse(firstNonNull(defaultSchedule, DEFAULT_SCHEDULE));
-<a class="jxr_linenumber" name="L283" href="#L283">283</a>             <strong class="jxr_keyword">this</strong>.defaultDirection = requireNonNull(defaultDirection, <span class="jxr_string">"defaultDirection"</span>);
-<a class="jxr_linenumber" name="L284" href="#L284">284</a>             <strong class="jxr_keyword">this</strong>.defaultLocalPath = firstNonNull(defaultLocalPath, <span class="jxr_string">"/"</span>);
-<a class="jxr_linenumber" name="L285" href="#L285">285</a>             <strong class="jxr_keyword">this</strong>.defaultCredentialId = defaultCredentialId;
-<a class="jxr_linenumber" name="L286" href="#L286">286</a>             <strong class="jxr_keyword">this</strong>.includes = ImmutableList.copyOf(requireNonNullElements(includes, <span class="jxr_string">"includes"</span>));
-<a class="jxr_linenumber" name="L287" href="#L287">287</a>             <strong class="jxr_keyword">if</strong> (excludes != <strong class="jxr_keyword">null</strong>) {
-<a class="jxr_linenumber" name="L288" href="#L288">288</a>                 <strong class="jxr_keyword">this</strong>.excludes = ImmutableList.copyOf(requireNonNullElements(excludes, <span class="jxr_string">"excludes"</span>));
-<a class="jxr_linenumber" name="L289" href="#L289">289</a>             } <strong class="jxr_keyword">else</strong> {
-<a class="jxr_linenumber" name="L290" href="#L290">290</a>                 <strong class="jxr_keyword">this</strong>.excludes = Collections.emptyList();
-<a class="jxr_linenumber" name="L291" href="#L291">291</a>             }
-<a class="jxr_linenumber" name="L292" href="#L292">292</a>         }
-<a class="jxr_linenumber" name="L293" href="#L293">293</a> 
-<a class="jxr_linenumber" name="L294" href="#L294">294</a>         @Override
-<a class="jxr_linenumber" name="L295" href="#L295">295</a>         List&lt;Mirror&gt; toMirrors(<a href="../../../../../../../com/linecorp/centraldogma/server/storage/project/Project.html">Project</a> parent, Iterable&lt;MirrorCredential&gt; credentials) {
-<a class="jxr_linenumber" name="L296" href="#L296">296</a>             <strong class="jxr_keyword">if</strong> (!enabled) {
-<a class="jxr_linenumber" name="L297" href="#L297">297</a>                 <strong class="jxr_keyword">return</strong> Collections.emptyList();
-<a class="jxr_linenumber" name="L298" href="#L298">298</a>             }
-<a class="jxr_linenumber" name="L299" href="#L299">299</a> 
-<a class="jxr_linenumber" name="L300" href="#L300">300</a>             <strong class="jxr_keyword">final</strong> ImmutableList.Builder&lt;Mirror&gt; builder = ImmutableList.builder();
-<a class="jxr_linenumber" name="L301" href="#L301">301</a>             parent.repos().list().forEach((repoName, repo) -&gt; {
-<a class="jxr_linenumber" name="L302" href="#L302">302</a>                 <strong class="jxr_keyword">if</strong> (repoName == <strong class="jxr_keyword">null</strong> || excludes.stream().anyMatch(p -&gt; p.matcher(repoName).find())) {
-<a class="jxr_linenumber" name="L303" href="#L303">303</a>                     <strong class="jxr_keyword">return</strong>;
-<a class="jxr_linenumber" name="L304" href="#L304">304</a>                 }
-<a class="jxr_linenumber" name="L305" href="#L305">305</a> 
-<a class="jxr_linenumber" name="L306" href="#L306">306</a>                 <strong class="jxr_keyword">for</strong> (MirrorInclude i : includes) {
-<a class="jxr_linenumber" name="L307" href="#L307">307</a>                     <strong class="jxr_keyword">final</strong> Matcher m = i.pattern.matcher(repoName);
-<a class="jxr_linenumber" name="L308" href="#L308">308</a>                     <strong class="jxr_keyword">if</strong> (!m.matches()) {
-<a class="jxr_linenumber" name="L309" href="#L309">309</a>                         <strong class="jxr_keyword">continue</strong>;
-<a class="jxr_linenumber" name="L310" href="#L310">310</a>                     }
-<a class="jxr_linenumber" name="L311" href="#L311">311</a> 
-<a class="jxr_linenumber" name="L312" href="#L312">312</a>                     <strong class="jxr_keyword">final</strong> URI remoteUri = URI.create(m.replaceFirst(i.replacement));
-<a class="jxr_linenumber" name="L313" href="#L313">313</a>                     builder.add(Mirror.of(firstNonNull(i.schedule, defaultSchedule),
-<a class="jxr_linenumber" name="L314" href="#L314">314</a>                                           firstNonNull(i.direction, defaultDirection),
-<a class="jxr_linenumber" name="L315" href="#L315">315</a>                                           findCredential(credentials, remoteUri,
-<a class="jxr_linenumber" name="L316" href="#L316">316</a>                                                          i.credentialId != <strong class="jxr_keyword">null</strong> ? i.credentialId
-<a class="jxr_linenumber" name="L317" href="#L317">317</a>                                                                                 : defaultCredentialId),
-<a class="jxr_linenumber" name="L318" href="#L318">318</a>                                           repo,
-<a class="jxr_linenumber" name="L319" href="#L319">319</a>                                           firstNonNull(i.localPath, defaultLocalPath),
-<a class="jxr_linenumber" name="L320" href="#L320">320</a>                                           remoteUri));
-<a class="jxr_linenumber" name="L321" href="#L321">321</a>                 }
-<a class="jxr_linenumber" name="L322" href="#L322">322</a>             });
-<a class="jxr_linenumber" name="L323" href="#L323">323</a> 
-<a class="jxr_linenumber" name="L324" href="#L324">324</a>             <strong class="jxr_keyword">return</strong> builder.build();
-<a class="jxr_linenumber" name="L325" href="#L325">325</a>         }
-<a class="jxr_linenumber" name="L326" href="#L326">326</a>     }
+<a class="jxr_linenumber" name="L267" href="#L267">267</a>             <strong class="jxr_keyword">return</strong> Collections.singletonList(Mirror.of(
+<a class="jxr_linenumber" name="L268" href="#L268">268</a>                     schedule, direction, findCredential(credentials, remoteUri, credentialId),
+<a class="jxr_linenumber" name="L269" href="#L269">269</a>                     parent.repos().get(localRepo), localPath, remoteUri, gitignore));
+<a class="jxr_linenumber" name="L270" href="#L270">270</a>         }
+<a class="jxr_linenumber" name="L271" href="#L271">271</a>     }
+<a class="jxr_linenumber" name="L272" href="#L272">272</a> 
+<a class="jxr_linenumber" name="L273" href="#L273">273</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MultipleMirrorConfig</a> <strong class="jxr_keyword">extends</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MirrorConfig</a> {
+<a class="jxr_linenumber" name="L274" href="#L274">274</a> 
+<a class="jxr_linenumber" name="L275" href="#L275">275</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/mirror/MirrorDirection.html">MirrorDirection</a> defaultDirection;
+<a class="jxr_linenumber" name="L276" href="#L276">276</a>         <strong class="jxr_keyword">final</strong> String defaultLocalPath;
+<a class="jxr_linenumber" name="L277" href="#L277">277</a>         <strong class="jxr_keyword">final</strong> Cron defaultSchedule;
+<a class="jxr_linenumber" name="L278" href="#L278">278</a>         @Nullable
+<a class="jxr_linenumber" name="L279" href="#L279">279</a>         <strong class="jxr_keyword">final</strong> String defaultCredentialId;
+<a class="jxr_linenumber" name="L280" href="#L280">280</a>         <strong class="jxr_keyword">final</strong> List&lt;MirrorInclude&gt; includes;
+<a class="jxr_linenumber" name="L281" href="#L281">281</a>         <strong class="jxr_keyword">final</strong> List&lt;Pattern&gt; excludes;
+<a class="jxr_linenumber" name="L282" href="#L282">282</a> 
+<a class="jxr_linenumber" name="L283" href="#L283">283</a>         @JsonCreator
+<a class="jxr_linenumber" name="L284" href="#L284">284</a>         <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MultipleMirrorConfig</a>(
+<a class="jxr_linenumber" name="L285" href="#L285">285</a>                 @JsonProperty(<span class="jxr_string">"enabled"</span>) @Nullable Boolean enabled,
+<a class="jxr_linenumber" name="L286" href="#L286">286</a>                 @JsonProperty(<span class="jxr_string">"defaultSchedule"</span>) @Nullable String defaultSchedule,
+<a class="jxr_linenumber" name="L287" href="#L287">287</a>                 @JsonProperty(value = <span class="jxr_string">"defaultDirection"</span>, required = <strong class="jxr_keyword">true</strong>) MirrorDirection defaultDirection,
+<a class="jxr_linenumber" name="L288" href="#L288">288</a>                 @JsonProperty(<span class="jxr_string">"defaultLocalPath"</span>) @Nullable String defaultLocalPath,
+<a class="jxr_linenumber" name="L289" href="#L289">289</a>                 @JsonProperty(<span class="jxr_string">"defaultCredentialId"</span>) @Nullable String defaultCredentialId,
+<a class="jxr_linenumber" name="L290" href="#L290">290</a>                 @JsonProperty(value = <span class="jxr_string">"includes"</span>, required = <strong class="jxr_keyword">true</strong>)
+<a class="jxr_linenumber" name="L291" href="#L291">291</a>                 @JsonDeserialize(contentAs = MirrorInclude.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L292" href="#L292">292</a>                         Iterable&lt;MirrorInclude&gt; includes,
+<a class="jxr_linenumber" name="L293" href="#L293">293</a>                 @JsonProperty(<span class="jxr_string">"excludes"</span>) @Nullable
+<a class="jxr_linenumber" name="L294" href="#L294">294</a>                 @JsonDeserialize(contentAs = Pattern.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L295" href="#L295">295</a>                         Iterable&lt;Pattern&gt; excludes) {
+<a class="jxr_linenumber" name="L296" href="#L296">296</a> 
+<a class="jxr_linenumber" name="L297" href="#L297">297</a>             <strong class="jxr_keyword">super</strong>(firstNonNull(enabled, <strong class="jxr_keyword">true</strong>));
+<a class="jxr_linenumber" name="L298" href="#L298">298</a>             <strong class="jxr_keyword">this</strong>.defaultSchedule = cronParser.parse(firstNonNull(defaultSchedule, DEFAULT_SCHEDULE));
+<a class="jxr_linenumber" name="L299" href="#L299">299</a>             <strong class="jxr_keyword">this</strong>.defaultDirection = requireNonNull(defaultDirection, <span class="jxr_string">"defaultDirection"</span>);
+<a class="jxr_linenumber" name="L300" href="#L300">300</a>             <strong class="jxr_keyword">this</strong>.defaultLocalPath = firstNonNull(defaultLocalPath, <span class="jxr_string">"/"</span>);
+<a class="jxr_linenumber" name="L301" href="#L301">301</a>             <strong class="jxr_keyword">this</strong>.defaultCredentialId = defaultCredentialId;
+<a class="jxr_linenumber" name="L302" href="#L302">302</a>             <strong class="jxr_keyword">this</strong>.includes = ImmutableList.copyOf(requireNonNullElements(includes, <span class="jxr_string">"includes"</span>));
+<a class="jxr_linenumber" name="L303" href="#L303">303</a>             <strong class="jxr_keyword">if</strong> (excludes != <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="L304" href="#L304">304</a>                 <strong class="jxr_keyword">this</strong>.excludes = ImmutableList.copyOf(requireNonNullElements(excludes, <span class="jxr_string">"excludes"</span>));
+<a class="jxr_linenumber" name="L305" href="#L305">305</a>             } <strong class="jxr_keyword">else</strong> {
+<a class="jxr_linenumber" name="L306" href="#L306">306</a>                 <strong class="jxr_keyword">this</strong>.excludes = Collections.emptyList();
+<a class="jxr_linenumber" name="L307" href="#L307">307</a>             }
+<a class="jxr_linenumber" name="L308" href="#L308">308</a>         }
+<a class="jxr_linenumber" name="L309" href="#L309">309</a> 
+<a class="jxr_linenumber" name="L310" href="#L310">310</a>         @Override
+<a class="jxr_linenumber" name="L311" href="#L311">311</a>         List&lt;Mirror&gt; toMirrors(<a href="../../../../../../../com/linecorp/centraldogma/server/storage/project/Project.html">Project</a> parent, Iterable&lt;MirrorCredential&gt; credentials) {
+<a class="jxr_linenumber" name="L312" href="#L312">312</a>             <strong class="jxr_keyword">if</strong> (!enabled) {
+<a class="jxr_linenumber" name="L313" href="#L313">313</a>                 <strong class="jxr_keyword">return</strong> Collections.emptyList();
+<a class="jxr_linenumber" name="L314" href="#L314">314</a>             }
+<a class="jxr_linenumber" name="L315" href="#L315">315</a> 
+<a class="jxr_linenumber" name="L316" href="#L316">316</a>             <strong class="jxr_keyword">final</strong> ImmutableList.Builder&lt;Mirror&gt; builder = ImmutableList.builder();
+<a class="jxr_linenumber" name="L317" href="#L317">317</a>             parent.repos().list().forEach((repoName, repo) -&gt; {
+<a class="jxr_linenumber" name="L318" href="#L318">318</a>                 <strong class="jxr_keyword">if</strong> (repoName == <strong class="jxr_keyword">null</strong> || excludes.stream().anyMatch(p -&gt; p.matcher(repoName).find())) {
+<a class="jxr_linenumber" name="L319" href="#L319">319</a>                     <strong class="jxr_keyword">return</strong>;
+<a class="jxr_linenumber" name="L320" href="#L320">320</a>                 }
+<a class="jxr_linenumber" name="L321" href="#L321">321</a> 
+<a class="jxr_linenumber" name="L322" href="#L322">322</a>                 <strong class="jxr_keyword">for</strong> (MirrorInclude i : includes) {
+<a class="jxr_linenumber" name="L323" href="#L323">323</a>                     <strong class="jxr_keyword">final</strong> Matcher m = i.pattern.matcher(repoName);
+<a class="jxr_linenumber" name="L324" href="#L324">324</a>                     <strong class="jxr_keyword">if</strong> (!m.matches()) {
+<a class="jxr_linenumber" name="L325" href="#L325">325</a>                         <strong class="jxr_keyword">continue</strong>;
+<a class="jxr_linenumber" name="L326" href="#L326">326</a>                     }
 <a class="jxr_linenumber" name="L327" href="#L327">327</a> 
-<a class="jxr_linenumber" name="L328" href="#L328">328</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MirrorInclude</a> {
-<a class="jxr_linenumber" name="L329" href="#L329">329</a> 
-<a class="jxr_linenumber" name="L330" href="#L330">330</a>         <strong class="jxr_keyword">final</strong> Pattern pattern;
-<a class="jxr_linenumber" name="L331" href="#L331">331</a>         <strong class="jxr_keyword">final</strong> String replacement;
-<a class="jxr_linenumber" name="L332" href="#L332">332</a>         @Nullable
-<a class="jxr_linenumber" name="L333" href="#L333">333</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/mirror/MirrorDirection.html">MirrorDirection</a> direction;
-<a class="jxr_linenumber" name="L334" href="#L334">334</a>         @Nullable
-<a class="jxr_linenumber" name="L335" href="#L335">335</a>         <strong class="jxr_keyword">final</strong> String localPath;
-<a class="jxr_linenumber" name="L336" href="#L336">336</a>         @Nullable
-<a class="jxr_linenumber" name="L337" href="#L337">337</a>         <strong class="jxr_keyword">final</strong> String credentialId;
-<a class="jxr_linenumber" name="L338" href="#L338">338</a>         @Nullable
-<a class="jxr_linenumber" name="L339" href="#L339">339</a>         <strong class="jxr_keyword">final</strong> Cron schedule;
+<a class="jxr_linenumber" name="L328" href="#L328">328</a>                     <strong class="jxr_keyword">final</strong> URI remoteUri = URI.create(m.replaceFirst(i.replacement));
+<a class="jxr_linenumber" name="L329" href="#L329">329</a>                     builder.add(Mirror.of(firstNonNull(i.schedule, defaultSchedule),
+<a class="jxr_linenumber" name="L330" href="#L330">330</a>                                           firstNonNull(i.direction, defaultDirection),
+<a class="jxr_linenumber" name="L331" href="#L331">331</a>                                           findCredential(credentials, remoteUri,
+<a class="jxr_linenumber" name="L332" href="#L332">332</a>                                                          i.credentialId != <strong class="jxr_keyword">null</strong> ? i.credentialId
+<a class="jxr_linenumber" name="L333" href="#L333">333</a>                                                                                 : defaultCredentialId),
+<a class="jxr_linenumber" name="L334" href="#L334">334</a>                                           repo,
+<a class="jxr_linenumber" name="L335" href="#L335">335</a>                                           firstNonNull(i.localPath, defaultLocalPath),
+<a class="jxr_linenumber" name="L336" href="#L336">336</a>                                           remoteUri,
+<a class="jxr_linenumber" name="L337" href="#L337">337</a>                                           <strong class="jxr_keyword">null</strong>));
+<a class="jxr_linenumber" name="L338" href="#L338">338</a>                 }
+<a class="jxr_linenumber" name="L339" href="#L339">339</a>             });
 <a class="jxr_linenumber" name="L340" href="#L340">340</a> 
-<a class="jxr_linenumber" name="L341" href="#L341">341</a>         @JsonCreator
-<a class="jxr_linenumber" name="L342" href="#L342">342</a>         <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MirrorInclude</a>(@JsonProperty(<span class="jxr_string">"schedule"</span>) @Nullable String schedule,
-<a class="jxr_linenumber" name="L343" href="#L343">343</a>                       @JsonProperty(value = <span class="jxr_string">"pattern"</span>, required = <strong class="jxr_keyword">true</strong>) Pattern pattern,
-<a class="jxr_linenumber" name="L344" href="#L344">344</a>                       @JsonProperty(value = <span class="jxr_string">"replacement"</span>, required = <strong class="jxr_keyword">true</strong>) String replacement,
-<a class="jxr_linenumber" name="L345" href="#L345">345</a>                       @JsonProperty(<span class="jxr_string">"direction"</span>) @Nullable <a href="../../../../../../../com/linecorp/centraldogma/server/mirror/MirrorDirection.html">MirrorDirection</a> direction,
-<a class="jxr_linenumber" name="L346" href="#L346">346</a>                       @JsonProperty(<span class="jxr_string">"localPath"</span>) @Nullable String localPath,
-<a class="jxr_linenumber" name="L347" href="#L347">347</a>                       @JsonProperty(<span class="jxr_string">"credentialId"</span>) @Nullable String credentialId) {
-<a class="jxr_linenumber" name="L348" href="#L348">348</a> 
-<a class="jxr_linenumber" name="L349" href="#L349">349</a>             <strong class="jxr_keyword">this</strong>.schedule = schedule != <strong class="jxr_keyword">null</strong> ? MirrorConfig.cronParser.parse(schedule) : <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="L350" href="#L350">350</a>             <strong class="jxr_keyword">this</strong>.pattern = requireNonNull(pattern, <span class="jxr_string">"pattern"</span>);
-<a class="jxr_linenumber" name="L351" href="#L351">351</a>             <strong class="jxr_keyword">this</strong>.replacement = requireNonNull(replacement, <span class="jxr_string">"replacement"</span>);
-<a class="jxr_linenumber" name="L352" href="#L352">352</a>             <strong class="jxr_keyword">this</strong>.direction = direction;
-<a class="jxr_linenumber" name="L353" href="#L353">353</a>             <strong class="jxr_keyword">this</strong>.localPath = localPath;
-<a class="jxr_linenumber" name="L354" href="#L354">354</a>             <strong class="jxr_keyword">this</strong>.credentialId = credentialId;
-<a class="jxr_linenumber" name="L355" href="#L355">355</a>         }
-<a class="jxr_linenumber" name="L356" href="#L356">356</a>     }
-<a class="jxr_linenumber" name="L357" href="#L357">357</a> }
+<a class="jxr_linenumber" name="L341" href="#L341">341</a>             <strong class="jxr_keyword">return</strong> builder.build();
+<a class="jxr_linenumber" name="L342" href="#L342">342</a>         }
+<a class="jxr_linenumber" name="L343" href="#L343">343</a>     }
+<a class="jxr_linenumber" name="L344" href="#L344">344</a> 
+<a class="jxr_linenumber" name="L345" href="#L345">345</a>     <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> <strong class="jxr_keyword">class</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MirrorInclude</a> {
+<a class="jxr_linenumber" name="L346" href="#L346">346</a> 
+<a class="jxr_linenumber" name="L347" href="#L347">347</a>         <strong class="jxr_keyword">final</strong> Pattern pattern;
+<a class="jxr_linenumber" name="L348" href="#L348">348</a>         <strong class="jxr_keyword">final</strong> String replacement;
+<a class="jxr_linenumber" name="L349" href="#L349">349</a>         @Nullable
+<a class="jxr_linenumber" name="L350" href="#L350">350</a>         <strong class="jxr_keyword">final</strong> <a href="../../../../../../../com/linecorp/centraldogma/server/mirror/MirrorDirection.html">MirrorDirection</a> direction;
+<a class="jxr_linenumber" name="L351" href="#L351">351</a>         @Nullable
+<a class="jxr_linenumber" name="L352" href="#L352">352</a>         <strong class="jxr_keyword">final</strong> String localPath;
+<a class="jxr_linenumber" name="L353" href="#L353">353</a>         @Nullable
+<a class="jxr_linenumber" name="L354" href="#L354">354</a>         <strong class="jxr_keyword">final</strong> String credentialId;
+<a class="jxr_linenumber" name="L355" href="#L355">355</a>         @Nullable
+<a class="jxr_linenumber" name="L356" href="#L356">356</a>         <strong class="jxr_keyword">final</strong> Cron schedule;
+<a class="jxr_linenumber" name="L357" href="#L357">357</a> 
+<a class="jxr_linenumber" name="L358" href="#L358">358</a>         @JsonCreator
+<a class="jxr_linenumber" name="L359" href="#L359">359</a>         <a href="../../../../../../../com/linecorp/centraldogma/server/internal/storage/repository/DefaultMetaRepository.html">MirrorInclude</a>(@JsonProperty(<span class="jxr_string">"schedule"</span>) @Nullable String schedule,
+<a class="jxr_linenumber" name="L360" href="#L360">360</a>                       @JsonProperty(value = <span class="jxr_string">"pattern"</span>, required = <strong class="jxr_keyword">true</strong>) Pattern pattern,
+<a class="jxr_linenumber" name="L361" href="#L361">361</a>                       @JsonProperty(value = <span class="jxr_string">"replacement"</span>, required = <strong class="jxr_keyword">true</strong>) String replacement,
+<a class="jxr_linenumber" name="L362" href="#L362">362</a>                       @JsonProperty(<span class="jxr_string">"direction"</span>) @Nullable <a href="../../../../../../../com/linecorp/centraldogma/server/mirror/MirrorDirection.html">MirrorDirection</a> direction,
+<a class="jxr_linenumber" name="L363" href="#L363">363</a>                       @JsonProperty(<span class="jxr_string">"localPath"</span>) @Nullable String localPath,
+<a class="jxr_linenumber" name="L364" href="#L364">364</a>                       @JsonProperty(<span class="jxr_string">"credentialId"</span>) @Nullable String credentialId) {
+<a class="jxr_linenumber" name="L365" href="#L365">365</a> 
+<a class="jxr_linenumber" name="L366" href="#L366">366</a>             <strong class="jxr_keyword">this</strong>.schedule = schedule != <strong class="jxr_keyword">null</strong> ? MirrorConfig.cronParser.parse(schedule) : <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L367" href="#L367">367</a>             <strong class="jxr_keyword">this</strong>.pattern = requireNonNull(pattern, <span class="jxr_string">"pattern"</span>);
+<a class="jxr_linenumber" name="L368" href="#L368">368</a>             <strong class="jxr_keyword">this</strong>.replacement = requireNonNull(replacement, <span class="jxr_string">"replacement"</span>);
+<a class="jxr_linenumber" name="L369" href="#L369">369</a>             <strong class="jxr_keyword">this</strong>.direction = direction;
+<a class="jxr_linenumber" name="L370" href="#L370">370</a>             <strong class="jxr_keyword">this</strong>.localPath = localPath;
+<a class="jxr_linenumber" name="L371" href="#L371">371</a>             <strong class="jxr_keyword">this</strong>.credentialId = credentialId;
+<a class="jxr_linenumber" name="L372" href="#L372">372</a>         }
+<a class="jxr_linenumber" name="L373" href="#L373">373</a>     }
+<a class="jxr_linenumber" name="L374" href="#L374">374</a> }
 </pre>
 <hr/>
-<div id="footer">&copy; Copyright 2017&ndash;2019 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
+<div id="footer">&copy; Copyright 2017&ndash;2023 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
 </body>
 </html>

@@ -1,39 +1,42 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Java client library &mdash; Central Dogma 0.40.0 documentation</title>
+  <title>Java client library &mdash; Central Dogma 0.61.4-SNAPSHOT documentation</title>
   
-
-  
-  
-  
-  
-
-  
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
-  
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/overrides.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Better configuration change workflow with Git-to-CD mirroring" href="mirroring.html" />
@@ -69,7 +72,7 @@
             
             
               <div class="version">
-                0.40
+                0.61
               </div>
             
           
@@ -86,6 +89,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -126,12 +130,13 @@
 <li class="toctree-l1"><a class="reference external" href="xref/index.html#://">Source cross-reference</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/line/centraldogma/issues?q=label%3Aquestion-answered">Questions and answers</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/line/centraldogma">Fork me on GitHub</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/line/centraldogma/blob/master/CONTRIBUTING.md">Contributing</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/line/centraldogma/blob/main/CONTRIBUTING.md">Contributing</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -166,20 +171,22 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Java client library</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
+          
             
-            
-              <a href="https://github.com/line/centraldogma/blob/master/site/src/sphinx/client-java.rst" class="fa fa-github"> Edit on GitHub</a>
+              <a href="https://github.com/line/centraldogma/blob/main/site/src/sphinx/client-java.rst" class="fa fa-github"> Edit on GitHub</a>
             
           
         
@@ -205,20 +212,20 @@ exposed by a Central Dogma server.</p>
 <h2>Adding <code class="docutils literal notranslate"><span class="pre">centraldogma-client</span></code> as a dependency<a class="headerlink" href="#adding-centraldogma-client-as-a-dependency" title="Permalink to this headline">¶</a></h2>
 <p>Gradle:</p>
 <pre class="highlight-gradle literal-block">dependencies {
-    compile 'com.linecorp.centraldogma:centraldogma-client-armeria:0.40.0'
+    compile 'com.linecorp.centraldogma:centraldogma-client-armeria:0.61.4-SNAPSHOT'
 }</pre>
 <p>Maven:</p>
 <pre class="highlight-xml literal-block">&lt;dependencies&gt;
   &lt;dependency&gt;
     &lt;groupId&gt;com.linecorp.centraldogma&lt;/groupId&gt;
     &lt;artifactId&gt;centraldogma-client-armeria&lt;/artifactId&gt;
-    &lt;version&gt;0.40.0&lt;/version&gt;
+    &lt;version&gt;0.61.4-SNAPSHOT&lt;/version&gt;
   &lt;/dependency&gt;
 &lt;/dependencies&gt;</pre>
 </div>
 <div class="section" id="creating-a-client">
 <h2>Creating a client<a class="headerlink" href="#creating-a-client" title="Permalink to this headline">¶</a></h2>
-<p>First, we should create a new instance of <code class="code api-reference docutils literal notranslate"><span class="pre">com.linecorp.centraldogma.client.CentralDogma</span></code>:</p>
+<p>First, we should create a new instance of <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/client/CentralDogma.html">CentralDogma</a></code>:</p>
 <div class="highlight-java notranslate"><div class="highlight hljs"><pre class="java">import com.linecorp.centraldogma.client.CentralDogma;
 import com.linecorp.centraldogma.client.armeria.ArmeriaCentralDogmaBuilder;
 
@@ -328,8 +335,8 @@ assert mergedEntry.type() == EntryType.JSON
 assert mergedEntry.content() instanceof JsonNode;
 System.err.println(mergedEntry.content());</pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">mergeFiles()</span></code> call above will retrieve the <code class="code api-reference docutils literal notranslate"><span class="pre">MergedEntry</span></code> which contains a JSON document which
-is the result of merging the files specified in the <code class="code api-reference docutils literal notranslate"><span class="pre">MergeQuery</span></code> sequentially.
+<p>The <code class="docutils literal notranslate"><span class="pre">mergeFiles()</span></code> call above will retrieve the <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/common/MergedEntry.html">MergedEntry</a></code> which contains a JSON document which
+is the result of merging the files specified in the <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/common/MergeQuery.html">MergeQuery</a></code> sequentially.
 We specified <code class="docutils literal notranslate"><span class="pre">Revision.HEAD</span></code>, so the latest revision of <code class="docutils literal notranslate"><span class="pre">/a.json</span></code>, <code class="docutils literal notranslate"><span class="pre">/b.json</span></code> and <code class="docutils literal notranslate"><span class="pre">/c.json</span></code>
 will be merged. If you want to fetch at the specific revision, you can specify the revision as we
 did in <a class="reference internal" href="#getting-a-file"><span class="std std-ref">Getting a file</span></a>.</p>
@@ -372,7 +379,7 @@ Let’s consider that the contents of the <code class="docutils literal notransl
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Corresponding types of values should be same or one of the types must be <code class="docutils literal notranslate"><span class="pre">null</span></code> to replace.
-If their types do not match or neither value is <code class="docutils literal notranslate"><span class="pre">null</span></code>, you will get a <code class="code api-reference docutils literal notranslate"><span class="pre">QueryExecutionException</span></code>.</p>
+If their types do not match or neither value is <code class="docutils literal notranslate"><span class="pre">null</span></code>, you will get a <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/common/QueryExecutionException.html">QueryExecutionException</a></code>.</p>
 </div>
 <p>You can mark some files involved in the merge process as optional.</p>
 <div class="highlight-java notranslate"><div class="highlight hljs"><pre class="java">CentralDogma dogma = ...;
@@ -385,12 +392,12 @@ CompletableFuture&lt;MergedEntry&lt;JsonNode&gt;&gt; future =
 </div>
 <p>Note that we used <code class="docutils literal notranslate"><span class="pre">MergeSource.ofOptional(&quot;/b.json&quot;)</span></code>, which tells to include the <code class="docutils literal notranslate"><span class="pre">/b.json</span></code> file only if it
 exists in the repository. If it does not exist, <code class="docutils literal notranslate"><span class="pre">/a.json</span></code> and <code class="docutils literal notranslate"><span class="pre">/c.json</span></code> will be merged sequentially.
-The files specified as required must exist in the repository. You will get an <code class="code api-reference docutils literal notranslate"><span class="pre">EntryNotFoundException</span></code>
+The files specified as required must exist in the repository. You will get an <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/common/EntryNotFoundException.html">EntryNotFoundException</a></code>
 otherwise.
-You will get the <code class="code api-reference docutils literal notranslate"><span class="pre">EntryNotFoundException</span></code> as well when you specify all of the files as optional
+You will get the <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/common/EntryNotFoundException.html">EntryNotFoundException</a></code> as well when you specify all of the files as optional
 and none of them exists.</p>
 <p>As we used <code class="docutils literal notranslate"><span class="pre">Query.ofJsonPath()</span></code> in <a class="reference internal" href="#getting-a-file"><span class="std std-ref">Getting a file</span></a>, you can use <code class="docutils literal notranslate"><span class="pre">MergeQuery.ofJsonPath()</span></code> to
-retrieve the result of JSON path evaluation of the <code class="code api-reference docutils literal notranslate"><span class="pre">MergedEntry</span></code>.</p>
+retrieve the result of JSON path evaluation of the <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/common/MergedEntry.html">MergedEntry</a></code>.</p>
 <div class="highlight-java notranslate"><div class="highlight hljs"><pre class="java">CentralDogma dogma = ...;
 List&lt;MergeSource&gt; mergeSources = Arrays.asList(MergeSource.ofRequired(&quot;/a.json&quot;),
                                                MergeSource.ofOptional(&quot;/b.json&quot;),
@@ -400,10 +407,10 @@ CompletableFuture&lt;MergedEntry&lt;JsonNode&gt;&gt; future =
                          MergeQuery.ofJsonPath(mergeSources, &quot;$.someValue&quot;));</pre></div>
 </div>
 <p>Central Dogma server will apply the JSON path expression <code class="docutils literal notranslate"><span class="pre">$.someValue</span></code> to the content of the
-<code class="code api-reference docutils literal notranslate"><span class="pre">MergedEntry</span></code>, and return the query result to the client.</p>
+<code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/common/MergedEntry.html">MergedEntry</a></code>, and return the query result to the client.</p>
 </div>
 <div class="section" id="pushing-a-commit">
-<h2>Pushing a commit<a class="headerlink" href="#pushing-a-commit" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>Pushing a commit<a class="headerlink" href="#pushing-a-commit" title="Permalink to this headline">¶</a></h2>
 <p>You can also push a commit into a repository programmatically:</p>
 <div class="highlight-java notranslate"><div class="highlight hljs"><pre class="java">import com.linecorp.centraldogma.common.Change;
 import com.linecorp.centraldogma.common.Commit;
@@ -491,7 +498,7 @@ timing out. Consider specifying a sensible default value if you need to use a sm
 sure your application is not affected when the servers have an issue.</p>
 <p>Alternatively, you can choose not to use <code class="docutils literal notranslate"><span class="pre">awaitInitialValue()</span></code> at all if the value being retrieved is not
 part of a critical path, e.g. span collection rate in distributed tracing. In such a case, you can simply
-add a callback to <code class="code api-reference docutils literal notranslate"><span class="pre">Watcher</span></code> or poll the most recently retrieved value using the <code class="docutils literal notranslate"><span class="pre">latestValue()</span></code> method:</p>
+add a callback to <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/client/Watcher.html">Watcher</a></code> or poll the most recently retrieved value using the <code class="docutils literal notranslate"><span class="pre">latestValue()</span></code> method:</p>
 <div class="highlight-java notranslate"><div class="highlight hljs"><pre class="java">CentralDogma dogma = ...;
 Watcher&lt;JsonNode&gt; watcher = dogma.fileWatcher(..., Query.ofJsonPath(...));
 
@@ -519,7 +526,7 @@ CentralDogma dogma = builder.build();</pre></div>
 </div>
 </div>
 <div class="section" id="using-client-profiles">
-<span id="id2"></span><h2>Using client profiles<a class="headerlink" href="#using-client-profiles" title="Permalink to this headline">¶</a></h2>
+<span id="id3"></span><h2>Using client profiles<a class="headerlink" href="#using-client-profiles" title="Permalink to this headline">¶</a></h2>
 <p>You can load the list of the Central Dogma servers from one of the following JSON files in the class path using
 <code class="docutils literal notranslate"><span class="pre">ArmeriaCentralDogmaBuilder.profile(String...)</span></code>:</p>
 <ul class="simple">
@@ -661,18 +668,23 @@ client profile JAR again.</p>
 </div>
 <div class="section" id="spring-boot-integration">
 <h2>Spring Boot integration<a class="headerlink" href="#spring-boot-integration" title="Permalink to this headline">¶</a></h2>
-<p>If you are using <a class="reference external" href="https://spring.io/">Spring Framework</a>, you can inject <code class="code api-reference docutils literal notranslate"><span class="pre">com.linecorp.centraldogma.client.CentralDogma</span></code>
-client very easily. First, add <code class="docutils literal notranslate"><span class="pre">centraldogma-client-spring-boot-starter</span></code> into your dependencies.</p>
+<p>If you are using <a class="reference external" href="https://spring.io/">Spring Framework</a>, you can inject <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/client/CentralDogma.html">CentralDogma</a></code>
+client very easily. First, add <code class="docutils literal notranslate"><span class="pre">centraldogma-client-spring-boot3-starter</span></code> into your dependencies.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">centraldogma-client-spring-boot2-starter</span></code> dependency if you are using Spring Boot 2 or running your application with
+a Java version lower than 17.</p>
+</div>
 <p>Gradle:</p>
 <pre class="highlight-gradle literal-block">dependencies {
-    compile 'com.linecorp.centraldogma:centraldogma-client-spring-boot-starter:0.40.0'
+    compile 'com.linecorp.centraldogma:centraldogma-client-spring-boot3-starter:0.61.4-SNAPSHOT'
 }</pre>
 <p>Maven:</p>
 <pre class="highlight-xml literal-block">&lt;dependencies&gt;
   &lt;dependency&gt;
     &lt;groupId&gt;com.linecorp.centraldogma&lt;/groupId&gt;
-    &lt;artifactId&gt;centraldogma-client-spring-boot-starter&lt;/artifactId&gt;
-    &lt;version&gt;0.40.0&lt;/version&gt;
+    &lt;artifactId&gt;centraldogma-client-spring-boot3-starter&lt;/artifactId&gt;
+    &lt;version&gt;0.61.4-SNAPSHOT&lt;/version&gt;
   &lt;/dependency&gt;
 &lt;/dependencies&gt;</pre>
 <p>Then, add a new section called <code class="docutils literal notranslate"><span class="pre">centraldogma</span></code> to your Spring Boot application configuration, which is often
@@ -704,7 +716,7 @@ will be chosen.</p>
   use-tls: true
   health-check-interval-millis: 15000</pre></div>
 </div>
-<p>Once configured correctly, a new <code class="code api-reference docutils literal notranslate"><span class="pre">com.linecorp.centraldogma.client.CentralDogma</span></code> client will be created and
+<p>Once configured correctly, a new <code class="code api-reference docutils literal javadoc"><a class="code api-reference reference external javadoc" href="apidocs/com/linecorp/centraldogma/client/CentralDogma.html">CentralDogma</a></code> client will be created and
 injected into your application like the following:</p>
 <div class="highlight-java notranslate"><div class="highlight hljs"><pre class="java">import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -743,29 +755,29 @@ much more than what this tutorial covers, such as fetching and watching multiple
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="mirroring.html" class="btn btn-neutral float-right" title="Better configuration change workflow with Git-to-CD mirroring" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="client-cli.html" class="btn btn-neutral float-left" title="Command-line client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="mirroring.html" class="btn btn-neutral float-right" title="Better configuration change workflow with Git-to-CD mirroring" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="client-cli.html" class="btn btn-neutral float-left" title="Command-line client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2017-2019, LINE Corporation
+        &#169; Copyright 2017-2023, LINE Corporation.
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
@@ -773,7 +785,6 @@ much more than what this tutorial covers, such as fetching and watching multiple
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
@@ -785,8 +796,13 @@ much more than what this tutorial covers, such as fetching and watching multiple
   
     
   
-  <a class="github-fork-ribbon" href="https://github.com/line/centraldogma"
-     data-ribbon="Fork me on GitHub" title="Fork me on GitHub">Fork me on GitHub</a>
+  <a href="https://github.com/line/centraldogma" class="github-corner" aria-label="View source on GitHub">
+    <svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true">
+      <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z" fill="#1e2834"></path>
+      <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="#ffffff" style="transform-origin: 130px 106px;"></path>
+      <path class="octo-body" d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="#ffffff"></path>
+    </svg>
+  </a>
   <script type="text/javascript" src="_static/add_badges.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/gradle.min.js"></script>

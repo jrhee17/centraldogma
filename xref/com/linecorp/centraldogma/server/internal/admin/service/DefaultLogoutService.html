@@ -48,7 +48,7 @@
 <a class="jxr_linenumber" name="L40" href="#L40">40</a>      <strong class="jxr_keyword">protected</strong> HttpResponse doPost(ServiceRequestContext ctx, HttpRequest req) <strong class="jxr_keyword">throws</strong> Exception {
 <a class="jxr_linenumber" name="L41" href="#L41">41</a>          <strong class="jxr_keyword">return</strong> HttpResponse.from(
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>                  req.aggregate()
-<a class="jxr_linenumber" name="L43" href="#L43">43</a>                     .thenApply(msg -&gt; AuthTokenExtractors.OAUTH2.apply(RequestHeaders.of(msg.headers())))
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>                     .thenApply(msg -&gt; AuthTokenExtractors.oAuth2().apply(RequestHeaders.of(msg.headers())))
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>                     .thenCompose(token -&gt; {
 <a class="jxr_linenumber" name="L45" href="#L45">45</a>                         <strong class="jxr_keyword">final</strong> String sessionId = token.accessToken();
 <a class="jxr_linenumber" name="L46" href="#L46">46</a>                         <strong class="jxr_keyword">return</strong> executor.execute(Command.removeSession(sessionId));
@@ -60,6 +60,6 @@
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>  }
 </pre>
 <hr/>
-<div id="footer">&copy; Copyright 2017&ndash;2019 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
+<div id="footer">&copy; Copyright 2017&ndash;2023 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
 </body>
 </html>

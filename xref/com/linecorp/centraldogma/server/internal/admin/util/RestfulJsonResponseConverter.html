@@ -59,7 +59,7 @@
 <a class="jxr_linenumber" name="L51" href="#L51">51</a>              <strong class="jxr_keyword">final</strong> HttpData httpData =
 <a class="jxr_linenumber" name="L52" href="#L52">52</a>                      resObj != <strong class="jxr_keyword">null</strong> &amp;&amp;
 <a class="jxr_linenumber" name="L53" href="#L53">53</a>                      resObj.getClass() == Object.<strong class="jxr_keyword">class</strong> ? EMPTY_RESULT
-<a class="jxr_linenumber" name="L54" href="#L54">54</a>                                                        : HttpData.of(Jackson.writeValueAsBytes(resObj));
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>                                                        : HttpData.wrap(Jackson.writeValueAsBytes(resObj));
 <a class="jxr_linenumber" name="L55" href="#L55">55</a>  
 <a class="jxr_linenumber" name="L56" href="#L56">56</a>              <strong class="jxr_keyword">final</strong> ResponseHeadersBuilder builder = headers.toBuilder();
 <a class="jxr_linenumber" name="L57" href="#L57">57</a>              <strong class="jxr_keyword">if</strong> (HttpMethod.POST == request.method()) {
@@ -76,6 +76,6 @@
 <a class="jxr_linenumber" name="L68" href="#L68">68</a>  }
 </pre>
 <hr/>
-<div id="footer">&copy; Copyright 2017&ndash;2019 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
+<div id="footer">&copy; Copyright 2017&ndash;2023 <a href="https://engineering.linecorp.com/en/">LINE Corporation</a>. All rights reserved.</div>
 </body>
 </html>

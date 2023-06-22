@@ -11,9 +11,11 @@ com.linecorp.centraldogma.server.auth.saml
 com.linecorp.centraldogma.server.auth.shiro
 com.linecorp.centraldogma.server.auth.shiro.realm
 com.linecorp.centraldogma.server.command
+com.linecorp.centraldogma.server.metadata
 com.linecorp.centraldogma.server.mirror
 com.linecorp.centraldogma.server.plugin
 com.linecorp.centraldogma.server.storage
 com.linecorp.centraldogma.server.storage.project
 com.linecorp.centraldogma.server.storage.repository
-com.linecorp.centraldogma.testing
+com.linecorp.centraldogma.testing.junit
+com.linecorp.centraldogma.testing.junit4

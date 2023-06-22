@@ -1,16 +1,14 @@
 name: Publish Central Dogma site
 
 on:
-  push:
-    tags:
-      - centraldogma-*
+  push
 
 env:
   LC_ALL: 'en_US.UTF-8'
 
 jobs:
   publish-site:
-    if: github.repository == 'line/centraldogma'
+    if: github.repository == 'jrhee17/centraldogma'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

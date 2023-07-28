@@ -12,4 +12,5 @@ dependencies {
     if (project.ext.targetJavaVersion >= 11) {
         testImplementation project(path: ':server-jgit6')
     }
+    testImplementation libs.shiro.core
 }

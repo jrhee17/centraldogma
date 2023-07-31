@@ -27,7 +27,7 @@ class MainTest {
 
     @BeforeAll
     static void beforeAll() {
-        for (int index = 1; index <= 3; index++) {
+        for (int index = 1; index <= 10; index++) {
             MAP.put(index, new ZooKeeperServerConfig("127.0.0.1", 5000 + index, 6000 + index, 7000 + index,
                                                      null, null));
         }
@@ -39,12 +39,13 @@ class MainTest {
     }
 
     @ParameterizedTest
-    @ValueSource(ints = {1,2,3})
+    @ValueSource(ints = {1,2,3,4,5,6,7,8,9,10})
     void testMain(int index) {
         CentralDogma dogma = new CentralDogmaBuilder(new File("./data" + index))
                 .port(new ServerPort(8000 + index, SessionProtocol.HTTP))
                 .webAppEnabled(true)
                 .replication(new ZooKeeperReplicationConfig(index, MAP))
+                .accessLogFormat("%t %r %s serverId: " + index)
                 .authProviderFactory(new ShiroAuthProviderFactory(unused -> {
                     final Ini iniConfig = new Ini();
                     iniConfig.addSection("users").put(USERNAME, PASSWORD);

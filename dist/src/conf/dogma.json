@@ -32,10 +32,37 @@
   "numMirroringThreads": null,
   "maxNumFilesPerMirror": null,
   "maxNumBytesPerMirror": null,
-  "replication": {
-    "method": "NONE"
+  "replication" : {
+    "method": "ZOOKEEPER",
+    "servers": {
+      "1": {
+        "host": "cd-0.cd-hs.default.svc.cluster.local",
+        "quorumPort": 36463,
+        "electionPort": 36464,
+        "groupId": 1
+      },
+      "2": {
+        "host": "cd-1.cd-hs.default.svc.cluster.local",
+        "quorumPort": 36463,
+        "electionPort": 36464,
+        "groupId": 1
+      },
+      "3": {
+        "host": "cd-2.cd-hs.default.svc.cluster.local",
+        "quorumPort": 36463,
+        "electionPort": 36464,
+        "groupId": 1
+      }
+    }
   },
   "csrfTokenRequiredForThrift": null,
   "accessLogFormat": "common",
-  "authentication": null
+  "authentication": {
+    "factoryClassName": "com.linecorp.centraldogma.server.auth.shiro.ShiroAuthProviderFactory",
+    "properties": "/opt/centraldogma/conf/shiro.example.local.ini",
+    "caseSensitiveLoginNames": null,
+    "sessionCacheSpec": "maximumSize=8192,expireAfterWrite=604800s",
+    "sessionTimeoutMillis": 604800000,
+    "sessionValidationSchedule": null
+  }
 }

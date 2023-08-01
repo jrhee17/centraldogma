@@ -27,9 +27,13 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -44,6 +48,7 @@ import io.netty.util.NetUtil;
  * ZooKeeper-based replication configuration.
  */
 public final class ZooKeeperReplicationConfig implements ReplicationConfig {
+    private static final Logger logger = LoggerFactory.getLogger(ZooKeeperReplicationConfig.class);
 
     private static final int DEFAULT_TIMEOUT_MILLIS = 10000;
     private static final int DEFAULT_NUM_WORKERS = 16;
@@ -155,15 +160,14 @@ public final class ZooKeeperReplicationConfig implements ReplicationConfig {
                                     InetAddress addr) {
         final String ip = NetUtil.toAddressString(addr, true);
         for (Entry<Integer, ZooKeeperServerConfig> entry : servers.entrySet()) {
-            final String zkAddr;
+            String zkAddr = null;
             try {
                 zkAddr = NetUtil.toAddressString(InetAddress.getByName(entry.getValue().host()), true);
             } catch (UnknownHostException uhe) {
-                throw new IllegalStateException(
-                        "failed to resolve the IP address of the server name: " + entry.getValue().host());
+                logger.warn("failed to resolve the IP address of the server name: {}", entry.getValue().host());
             }
 
-            if (zkAddr.equals(ip)) {
+            if (Objects.equals(zkAddr, ip)) {
                 final int serverId = entry.getKey().intValue();
                 if (currentServerId < 0) {
                     currentServerId = serverId;

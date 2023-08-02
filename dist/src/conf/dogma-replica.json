@@ -1,0 +1,59 @@
+{
+  "dataDir": "./data",
+  "ports": [
+    {
+      "localAddress": {
+        "host": "*",
+        "port": 36462
+      },
+      "protocols": [
+        "http"
+      ]
+    }
+  ],
+  "tls": null,
+  "trustedProxyAddresses": null,
+  "clientAddressSources": null,
+  "numWorkers": null,
+  "maxNumConnections": null,
+  "requestTimeoutMillis": null,
+  "idleTimeoutMillis": null,
+  "maxFrameLength": null,
+  "numRepositoryWorkers": 16,
+  "maxRemovedRepositoryAgeMillis": null,
+  "repositoryCacheSpec": "maximumWeight=134217728,expireAfterAccess=5m",
+  "gracefulShutdownTimeout": {
+    "quietPeriodMillis": 1000,
+    "timeoutMillis": 10000
+  },
+  "webAppEnabled": true,
+  "webAppTitle": "Config Center",
+  "mirroringEnabled": null,
+  "numMirroringThreads": null,
+  "maxNumFilesPerMirror": 20000,
+  "maxNumBytesPerMirror": 209715200,
+  "replication": {
+    "method": "ZOOKEEPER",
+    "serverId": ${MACHINE_INDEX},
+    "servers": {
+      ${SERVERS}
+    },
+    "secret": "F093C514-367F-4372-B4BC-68055759D609",
+    "additionalProperties": {},
+    "timeoutMillis": null,
+    "numWorkers": null,
+    "maxLogCount": null,
+    "minLogAgeMillis": null
+  },
+  "csrfTokenRequiredForThrift": null,
+  "accessLogFormat": "common",
+  "authentication": {
+    "factoryClassName": "com.linecorp.centraldogma.server.auth.shiro.ShiroAuthProviderFactory",
+    "administrators": [],
+    "caseSensitiveLoginNames": false,
+    "sessionCacheSpec": "maximumSize=8192,expireAfterWrite=604800s",
+    "sessionTimeoutMillis": 604800000,
+    "sessionValidationSchedule": "0 30 */4 ? * *",
+    "properties": "/opt/centraldogma/conf/shiro.example.local.ini"
+  }
+}

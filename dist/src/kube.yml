@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: config-server
+  labels:
+    app: config-server
+spec:
+  serviceName: config-server-headless
+  replicas: 3
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: config-server
+      app.kubernetes.io/instance: config-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: config-server
+        app.kubernetes.io/instance: config-server
+    spec:
+      containers:
+        - name: app
+          image: my-centraldogma
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 36462
+              protocol: TCP
+            - name: quorum
+              containerPort: 36463
+              protocol: TCP
+            - name: election
+              containerPort: 36464
+              protocol: TCP
+          env:
+            - name: POD_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: REPLICA_COUNT
+              value: "3"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 250Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-server-headless
+  labels:
+    app.kubernetes.io/name: config-server
+    app.kubernetes.io/instance: config-server
+spec:
+  ports:
+    - port: 36462
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 36463
+      targetPort: http
+      protocol: TCP
+      name: quorum
+    - port: 36464
+      targetPort: http
+      protocol: TCP
+      name: election
+  selector:
+    app.kubernetes.io/name: config-server
+    app.kubernetes.io/instance: config-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-server
+  labels:
+    app.kubernetes.io/name: config-server
+    app.kubernetes.io/instance: config-server
+spec:
+  ports:
+    - port: 36462
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 36463
+      targetPort: http
+      protocol: TCP
+      name: quorum
+    - port: 36464
+      targetPort: http
+      protocol: TCP
+      name: election
+  selector:
+    app.kubernetes.io/name: config-server
